@@ -1,0 +1,45 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  url?: string;
+  type?: string;
+}
+
+const {
+  title,
+  description = "Bloom Brief | Professional insights, technical research, and designated consultancy for the commercial flower and horticulture sector in Ethiopia.",
+  image = "/hero.png", // Default image path in public directory
+  url = "https://bloombrief.ethiopianhorticulture.com",
+  type = "website"
+} = Astro.props;
+
+// Ensure absolute URL for image if it's a relative path starting with /
+const imageUrl = image.startsWith('http') ? image : `${url}${image}`;
+---
+
+<!-- Core Meta -->
+<title>{title}</title>
+<meta name="description" content={description} />
+<meta name="title" content={title} />
+<meta name="robots" content="index, follow" />
+<meta name="author" content="Bloom Brief" />
+
+<!-- Open Graph / LinkedIn / Facebook / WhatsApp -->
+<meta property="og:type" content={type} />
+<meta property="og:url" content={url} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:site_name" content="Bloom Brief" />
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={url} />
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={imageUrl} />
+
+<!-- Canonical URL -->
+<link rel="canonical" href={url} />

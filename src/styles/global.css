@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #003366;
+  --color-accent: #00A8E8;
+  --color-brand: #1B4332;
+  --color-highlight: #FFB703;
+  
+  --font-heading: 'Montserrat', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-amharic: 'Noto Sans Ethiopic', sans-serif;
+}
+
+@layer base {
+  body {
+    @apply font-body;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+  html[lang="am"] {
+    @apply font-amharic leading-[1.8];
+  }
+  html[lang="am"] h1, html[lang="am"] h2, html[lang="am"] h3, html[lang="am"] h4, html[lang="am"] h5, html[lang="am"] h6 {
+    @apply font-amharic;
+  }
+}
+
+/* ==========================================
+   Article Prose — Rendered from Lexical JSON
+   ========================================== */
+.article-prose {
+  color: #1e293b;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.article-prose p {
+  margin-bottom: 1.5rem;
+}
+
+.article-prose h1,
+.article-prose h2,
+.article-prose h3,
+.article-prose h4,
+.article-prose h5,
+.article-prose h6 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  color: #0f172a;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+.article-prose h1 { font-size: 2rem; }
+.article-prose h2 { font-size: 1.6rem; }
+.article-prose h3 { font-size: 1.3rem; }
+.article-prose h4 { font-size: 1.1rem; }
+
+.article-prose blockquote {
+  border-left: 4px solid #00A8E8;
+  margin: 2rem 0;
+  padding: 1rem 1.5rem;
+  background: #f0f9ff;
+  border-radius: 0 0.5rem 0.5rem 0;
+  font-style: italic;
+  color: #334155;
+}
+
+.article-prose ul {
+  list-style-type: disc;
+  padding-left: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.article-prose ol {
+  list-style-type: decimal;
+  padding-left: 1.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.article-prose li {
+  margin-bottom: 0.5rem;
+}
+
+.article-prose a {
+  color: #00A8E8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+
+.article-prose a:hover {
+  color: #003366;
+}
+
+.article-prose code.inline-code {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.25rem;
+  padding: 0.15rem 0.4rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  color: #0f172a;
+}
+
+.article-prose pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  overflow-x: auto;
+  margin: 2rem 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.article-prose pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-family: 'Courier New', monospace;
+}
+
+.article-prose figure.article-figure {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.article-prose figure.article-figure img {
+  width: 100%;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+.article-prose figure.article-figure figcaption {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: #64748b;
+  font-style: italic;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Amharic article content */
+html[lang="am"] .article-prose {
+  font-family: 'Noto Sans Ethiopic', sans-serif;
+  line-height: 1.9;
+}

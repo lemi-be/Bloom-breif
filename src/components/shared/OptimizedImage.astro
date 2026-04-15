@@ -1,0 +1,61 @@
+---
+import { getOptimizedUrl } from '../../lib/imagekit';
+
+interface Props {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  aspectRatio?: '21:9' | '4:3' | '1:1' | '16:9';
+  class?: string;
+  loading?: 'lazy' | 'eager';
+  quality?: number;
+}
+
+const { 
+  src, 
+  alt, 
+  width, 
+  height, 
+  aspectRatio = '4:3', 
+  class: className, 
+  loading = 'lazy',
+  quality = 80
+} = Astro.props;
+
+let finalWidth = width || 800;
+let finalHeight = height;
+
+if (!finalHeight) {
+  if (aspectRatio === '21:9') finalHeight = Math.round(finalWidth * (9 / 21));
+  else if (aspectRatio === '4:3') finalHeight = Math.round(finalWidth * (3 / 4));
+  else if (aspectRatio === '1:1') finalHeight = finalWidth;
+  else if (aspectRatio === '16:9') finalHeight = Math.round(finalWidth * (9 / 16));
+}
+
+const optimizedUrl = getOptimizedUrl(src, {
+  width: finalWidth,
+  height: finalHeight,
+  quality,
+  focus: 'auto',
+  format: 'auto'
+});
+
+const aspectClass = {
+  '21:9': 'aspect-[21/9]',
+  '4:3': 'aspect-[4/3]',
+  '1:1': 'aspect-square',
+  '16:9': 'aspect-video'
+}[aspectRatio];
+---
+
+<div class={`${aspectClass} overflow-hidden ${className || ''}`}>
+  <img
+    src={optimizedUrl}
+    alt={alt}
+    loading={loading}
+    width={finalWidth}
+    height={finalHeight}
+    class="w-full h-full object-cover"
+  />
+</div>

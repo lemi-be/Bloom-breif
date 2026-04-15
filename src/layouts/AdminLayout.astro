@@ -1,0 +1,169 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+
+let userInitial = 'A';
+const { data: { user } } = await Astro.locals.supabase.auth.getUser();
+if (user) {
+  const { data: profile } = await Astro.locals.supabase
+    .from('profiles')
+    .select('full_name, email')
+    .eq('id', user.id)
+    .single();
+  userInitial = profile?.full_name?.[0]?.toUpperCase() || profile?.email?.[0]?.toUpperCase() || 'A';
+}
+
+const navItems = [
+  { label: 'Overview', href: '/admin/' },
+  { label: 'Articles', href: '/admin/posts/' },
+  { label: 'Research Hub', href: '/admin/research/' },
+  { label: 'Subscribers', href: '/admin/subscribers/' },
+  { label: 'Settings', href: '/admin/settings/' },
+];
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} | Bloom Brief Admin</title>
+    <ClientRouter />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-[#F4F7F9] font-sans text-gray-900 min-h-screen flex">
+
+    <!-- Sidebar -->
+    <aside class="w-60 bg-[#003366] min-h-screen fixed left-0 top-0 flex flex-col z-50">
+      <!-- Brand -->
+      <div class="px-6 pt-8 pb-6 border-b border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded bg-[#00A8E8] flex items-center justify-center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+          <div>
+            <p class="font-heading font-black text-white text-sm tracking-tight leading-none">Bloom Brief</p>
+            <p class="text-[10px] text-[#00A8E8] font-bold uppercase tracking-widest mt-0.5">Admin Suite</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nav -->
+      <nav class="flex-grow px-3 py-5 space-y-0.5">
+        {navItems.map(item => (
+          <a
+            href={item.href}
+            class="flex items-center gap-3 px-3 py-2.5 rounded text-[13px] font-semibold text-blue-200 hover:text-white hover:bg-white/10 transition-colors duration-150"
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
+
+      <!-- Footer Actions -->
+      <div class="px-3 pb-6 border-t border-white/10 pt-4 space-y-0.5">
+        <a href="/" class="flex items-center gap-3 px-3 py-2.5 rounded text-[13px] font-semibold text-blue-300 hover:text-white hover:bg-white/10 transition-colors duration-150">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/>
+          </svg>
+          View Site
+        </a>
+        <button id="logoutBtn" class="w-full flex items-center gap-3 px-3 py-2.5 rounded text-[13px] font-semibold text-red-400 hover:text-white hover:bg-red-600/20 transition-colors duration-150 text-left cursor-pointer">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <script>
+      import { logoutUser } from '../lib/dataService';
+      document.getElementById('logoutBtn')?.addEventListener('click', () => {
+        if (confirm('Are you sure you want to sign out?')) logoutUser();
+      });
+    </script>
+
+    <!-- Main -->
+    <main class="flex-grow ml-60 min-h-screen flex flex-col">
+
+      <!-- Top Bar -->
+      <header class="sticky top-0 z-40 bg-white border-b border-gray-200 px-8 py-4">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5">Admin Control Center</p>
+            <h1 class="text-xl font-heading font-extrabold text-gray-900 tracking-tight">{title}</h1>
+          </div>
+          <div class="flex items-center gap-3">
+            <a
+              href="/admin/editor"
+              class="inline-flex items-center gap-2 bg-[#003366] text-white px-4 py-2.5 rounded text-sm font-bold hover:bg-[#002244] transition-colors duration-150"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              New Article
+            </a>
+            <!-- User -->
+            <div class="h-8 w-8 rounded-full bg-[#00A8E8]/10 border border-[#00A8E8]/20 flex items-center justify-center">
+              <span id="userInitial" class="text-[11px] font-black text-[#00A8E8]">{userInitial}</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <div class="p-8 flex-grow">
+        <slot />
+      </div>
+    </main>
+
+    <style is:global>
+      @reference "../styles/global.css";
+
+      .admin-card {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        padding: 1.5rem;
+        transition: box-shadow 0.15s;
+      }
+      .admin-card:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      }
+
+      .badge-live {
+        background: #f0fdf4;
+        color: #15803d;
+        border: 1px solid #bbf7d0;
+      }
+      .badge-draft {
+        background: #fffbeb;
+        color: #b45309;
+        border: 1px solid #fde68a;
+      }
+
+      .admin-table tbody tr {
+        transition: background 0.1s;
+      }
+      .admin-table tbody tr:hover {
+        background: #f9fafb;
+      }
+
+      /* Stat card variants — solid, flat */
+      .stat-card-blue  { background: #003366; color: white; }
+      .stat-card-green { background: #1B4332; color: white; }
+      .stat-card-sky   { background: #0369a1; color: white; }
+      .stat-card-gold  { background: #b45309; color: white; }
+    </style>
+  </body>
+</html>

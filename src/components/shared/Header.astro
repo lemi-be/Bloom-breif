@@ -1,0 +1,121 @@
+---
+import SearchModal from './SearchModal.jsx';
+const { lang } = Astro.props;
+const otherLang = lang === 'en' ? 'am' : 'en';
+const otherLangName = lang === 'en' ? 'አማርኛ' : 'English';
+
+const links = [
+  { href: `/${lang}/`, text_en: 'Home', text_am: 'ዋና ገጽ' },
+  { href: `/${lang}/articles/`, text_en: 'Articles', text_am: 'ጽሑፎች' },
+  { href: `/${lang}/research/`, text_en: 'Research', text_am: 'ጥናት' },
+  { href: `/${lang}/about/`, text_en: 'About', text_am: 'ስለኛ' },
+];
+
+// Determine the URL for the language toggle
+const currentPath = Astro.url.pathname;
+const togglePath = currentPath.replace(`/${lang}/`, `/${otherLang}/`);
+---
+
+<header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-20">
+      <div class="flex-shrink-0 flex items-center">
+        <a href={`/${lang}/`} class="text-2xl font-heading font-bold text-primary flex items-center">
+          <span class="text-brand mr-2">❁</span>
+          Bloom Brief
+        </a>
+      </div>
+      <nav class="hidden md:flex space-x-8">
+        {links.map(link => (
+          <a href={link.href} class="text-gray-700 hover:text-accent font-medium px-3 py-2 rounded-md transition-colors">
+            {lang === 'en' ? link.text_en : link.text_am}
+          </a>
+        ))}
+      </nav>
+      <div class="flex items-center space-x-4">
+        <SearchModal client:load lang={lang} />
+        <a href={togglePath} class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 text-sm font-bold text-primary">
+          {otherLangName}
+        </a>
+        
+        <!-- Auth Status Container -->
+        <div id="auth-status-container" class="relative group ml-2">
+          <!-- Loading / default state -->
+          <div class="w-8 h-8 rounded-full bg-gray-100 animate-pulse border border-gray-200"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  import { supabase } from '../../lib/supabase';
+
+  // Function to initialize the auth header
+  async function initAuthHeader() {
+    const container = document.getElementById('auth-status-container');
+    if (!container) return;
+    
+    // Check current session authentically
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    // Path configuration
+    const currentLang = window.location.pathname.startsWith('/am') ? 'am' : 'en';
+    const loginText = currentLang === 'en' ? 'Log In' : 'ግቡ';
+    const profileText = currentLang === 'en' ? 'My Account' : 'የእኔ መለያ';
+    const signOutText = currentLang === 'en' ? 'Sign Out' : 'ውጣ';
+    
+    if (user) {
+      // User is LOGGED IN
+      const initial = user.email ? user.email.charAt(0).toUpperCase() : 'U';
+      
+      container.innerHTML = `
+        <button id="profile-dropdown-btn" class="w-9 h-9 rounded-full bg-[#003366] text-white font-bold flex items-center justify-center border-2 border-white shadow-sm hover:shadow transition-shadow focus:outline-none focus:ring-2 focus:ring-[#003366]/30">
+          ${initial}
+        </button>
+        <!-- Dropdown menu -->
+        <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+          <div class="px-4 py-2 border-b border-gray-100">
+            <p class="text-xs text-gray-500 font-medium">Signed in as</p>
+            <p class="text-sm text-gray-900 font-bold truncate">${user.email}</p>
+          </div>
+          <a href="/${currentLang}/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            ${profileText}
+          </a>
+          <button id="sign-out-btn" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center font-medium">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            ${signOutText}
+          </button>
+        </div>
+      `;
+      
+      // Attach sign out handler
+      setTimeout(() => {
+        document.getElementById('sign-out-btn')?.addEventListener('click', async () => {
+          await supabase.auth.signOut();
+          window.location.href = `/${currentLang}/`;
+        });
+      }, 0);
+      
+    } else {
+      // User is LOGGED OUT
+      container.innerHTML = `
+        <a href="/login" class="inline-flex items-center justify-center px-5 py-2 text-sm font-bold text-white bg-[#003366] hover:bg-[#002244] border border-transparent rounded shadow-sm transition-colors cursor-pointer">
+          <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+          ${loginText}
+        </a>
+      `;
+    }
+  }
+
+  // Initialize on page load
+  initAuthHeader();
+
+  // Listen for auth changes to update the UI globally
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+      initAuthHeader();
+    }
+  });
+</script>

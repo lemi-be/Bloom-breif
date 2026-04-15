@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: 'en' } },
+    { params: { lang: 'am' } }
+  ];
+}
+
+const { lang } = Astro.params;
+
+const text = lang === 'en' ? {
+  title: "Page Not Found",
+  headline: "404",
+  message: "We couldn't find the page you're looking for. It might have been moved, deleted, or perhaps you just took a wrong turn.",
+  homeBtn: "Return Home",
+  articlesBtn: "Browse Articles"
+} : {
+  title: "ገጽ አልተገኘም",
+  headline: "404",
+  message: "የሚፈልጉትን ገጽ ማግኘት አልቻልንም። ምናልባት ተዛውሮ፣ ተሰርዞ፣ ወይም ትንሽ ተሳስተው ሊሆን ይችላል።",
+  homeBtn: "ወደ ዋናው ገጽ ይመለሱ",
+  articlesBtn: "ጽሑፎችን ያስሱ"
+};
+---
+
+<BaseLayout lang={lang} title={`${text.title} | Bloom Brief`}>
+  <div class="min-h-[80vh] bg-[#F4F7F9] flex items-center justify-center px-4 py-16">
+    <div class="text-center max-w-xl mx-auto">
+      <div class="inline-flex items-center justify-center w-24 h-24 bg-[#003366]/5 rounded-full mb-8">
+        <svg class="w-12 h-12 text-[#003366]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      </div>
+      
+      <h1 class="text-7xl font-heading font-black text-[#003366] mb-4">{text.headline}</h1>
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">{text.title}</h2>
+      
+      <p class="text-lg text-gray-600 mb-10 leading-relaxed">
+        {text.message}
+      </p>
+      
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href={`/${lang}/`} class="w-full sm:w-auto px-8 py-3 bg-[#003366] hover:bg-[#002244] text-white font-bold rounded shadow-sm transition-colors">
+          {text.homeBtn}
+        </a>
+        <a href={`/${lang}/articles/`} class="w-full sm:w-auto px-8 py-3 bg-white border-2 border-[#003366]/20 text-[#003366] hover:bg-gray-50 font-bold rounded shadow-sm transition-colors">
+          {text.articlesBtn}
+        </a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,221 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getAdminResearchPosts } from '../../lib/dataService';
+
+const posts = await getAdminResearchPosts(Astro.locals.supabase);
+const liveCount = posts.filter(p => !p.draft).length;
+---
+
+<AdminLayout title="Research Hub">
+
+  <!-- Sub-stats -->
+  <div class="grid grid-cols-2 gap-4 mb-8">
+    <div class="admin-card flex items-center gap-4">
+      <div class="w-10 h-10 rounded bg-[#1B4332] flex items-center justify-center flex-shrink-0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
+        </svg>
+      </div>
+      <div>
+        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total Papers</p>
+        <p class="text-2xl font-heading font-black text-gray-900">{posts.length}</p>
+      </div>
+    </div>
+    <div class="admin-card flex items-center gap-4">
+      <div class="w-10 h-10 rounded bg-[#0369a1] flex items-center justify-center flex-shrink-0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+        </svg>
+      </div>
+      <div>
+        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Published</p>
+        <p class="text-2xl font-heading font-black text-gray-900">{liveCount}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="admin-card">
+    <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-100">
+      <div>
+        <h2 class="text-sm font-heading font-extrabold text-gray-900 uppercase tracking-wider">Technical Research Archive</h2>
+        <p class="text-xs text-gray-400 font-medium mt-0.5">Market intelligence and professional consultancy manuscripts</p>
+      </div>
+      <div class="flex gap-2 items-center">
+        <button id="filterBtn" class="px-3 py-2 border border-gray-200 rounded text-xs font-black text-gray-500 hover:bg-gray-50 transition uppercase tracking-widest">Filter: All</button>
+        <button id="exportBtn" class="px-3 py-2 border border-gray-200 rounded text-xs font-black text-gray-500 hover:bg-gray-50 transition uppercase tracking-widest">Export</button>
+        <a href="/admin/editor" class="px-4 py-2 bg-[#1B4332] text-white text-xs font-black rounded hover:bg-[#003366] transition-colors uppercase tracking-widest">
+          + New Research
+        </a>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto admin-table">
+      <table class="w-full text-left" id="postsTable">
+        <thead>
+          <tr class="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
+            <th class="pb-3">Report Title</th>
+            <th class="pb-3 text-center">Status</th>
+            <th class="pb-3">Release Date</th>
+            <th class="pb-3 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+          {posts.length === 0 ? (
+            <tr>
+              <td colspan="4" class="py-16 text-center">
+                <p class="text-sm font-black text-gray-300 uppercase tracking-widest mb-1">No Research Papers Yet</p>
+                <p class="text-xs text-gray-400">Create a new article and mark it as Research to see it here.</p>
+              </td>
+            </tr>
+          ) : (
+            posts.map(post => (
+              <tr class="post-row" data-status={post.draft ? 'draft' : 'live'}>
+                <td class="py-4 min-w-[280px] pr-4">
+                  <p class="text-gray-900 font-semibold text-sm leading-tight">{post.title_en || 'Untitled Report'}</p>
+                  <p class="text-[10px] text-[#1B4332] font-mono mt-0.5">research/{post.slug}</p>
+                </td>
+                <td class="py-4 text-center">
+                  <span class={`px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-widest ${post.draft ? 'badge-draft' : 'badge-live'}`}>
+                    {post.draft ? 'Hidden' : 'Public'}
+                  </span>
+                </td>
+                <td class="py-4 text-sm text-gray-500 font-medium">
+                  {new Date(post.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </td>
+                <td class="py-4 text-right">
+                  <div class="flex justify-end gap-2">
+                    <button data-action="toggle-visibility" data-slug={post.slug} data-draft={post.draft.toString()} class={`px-3 py-1.5 border border-gray-200 rounded text-[11px] font-black hover:bg-gray-50 transition uppercase tracking-widest ${post.draft ? 'text-emerald-600' : 'text-amber-600'}`}>
+                      {post.draft ? 'Publish' : 'Hide'}
+                    </button>
+                    <a href={`/admin/editor?slug=${post.slug}`} class="px-3 py-1.5 border border-gray-200 rounded text-[11px] font-black text-gray-600 hover:bg-gray-50 hover:text-[#003366] transition uppercase tracking-widest">Edit</a>
+                    <a href="/en/research/" target="_blank" class="px-3 py-1.5 border border-gray-200 rounded text-[11px] font-black text-gray-600 hover:bg-gray-50 transition uppercase tracking-widest">View</a>
+                    <button data-action="delete-post" data-slug={post.slug} class="px-3 py-1.5 border border-red-200 rounded text-[11px] font-black text-red-600 hover:bg-red-50 transition uppercase tracking-widest">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="posts-payload" data-posts={JSON.stringify(posts)} class="hidden"></div>
+</AdminLayout>
+
+<script>
+  import { supabase } from '../../lib/supabase';
+
+  document.addEventListener('astro:page-load', () => {
+    const filterBtn = document.getElementById('filterBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const rows = document.querySelectorAll('.post-row');
+    const payloadElem = document.getElementById('posts-payload');
+
+    if (!payloadElem) return; // Not on the research page
+
+    // --- ROW ACTIONS (Hide/Delete) ---
+    const toggleBtns = document.querySelectorAll('[data-action="toggle-visibility"]');
+    toggleBtns.forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const slug = btn.getAttribute('data-slug');
+        const isDraft = btn.getAttribute('data-draft') === 'true';
+        
+        if (!confirm(`Are you sure you want to ${isDraft ? 'publish this draft' : 'hide this live report'}?`)) return;
+        
+        btn.textContent = 'Updating...';
+        (btn as HTMLButtonElement).disabled = true;
+        
+        const { error } = await supabase.from('posts').update({ draft: !isDraft }).eq('slug', slug);
+        if (error) {
+          alert('Error updating research visibility: ' + error.message);
+          btn.textContent = isDraft ? 'Publish' : 'Hide';
+          (btn as HTMLButtonElement).disabled = false;
+        } else {
+          window.location.reload();
+        }
+      });
+    });
+
+    const deleteBtns = document.querySelectorAll('[data-action="delete-post"]');
+    deleteBtns.forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const slug = btn.getAttribute('data-slug');
+        if (!confirm(`Warning: You are about to permanently delete "${slug}".\n\nThis cannot be undone. Proceed?`)) return;
+        
+        btn.textContent = 'Deleting...';
+        (btn as HTMLButtonElement).disabled = true;
+
+        const { error } = await supabase.from('posts').delete().eq('slug', slug);
+        if (error) {
+          alert('Error deleting research post: ' + error.message);
+          btn.textContent = 'Delete';
+          (btn as HTMLButtonElement).disabled = false;
+        } else {
+          window.location.reload();
+        }
+      });
+    });
+
+    // --- FILTER LOGIC ---
+    let filterState = 0;
+    const filterLabels = ['Filter: All', 'Filter: Public', 'Filter: Hidden'];
+
+    if (filterBtn) {
+      filterBtn.addEventListener('click', () => {
+        filterState = (filterState + 1) % 3;
+        filterBtn.textContent = filterLabels[filterState];
+        
+        rows.forEach((row) => {
+          const status = (row as HTMLElement).dataset.status;
+          if (filterState === 0) {
+            (row as HTMLElement).style.display = '';
+          } else if (filterState === 1) {
+            (row as HTMLElement).style.display = status === 'live' ? '' : 'none';
+          } else if (filterState === 2) {
+            (row as HTMLElement).style.display = status === 'draft' ? '' : 'none';
+          }
+        });
+      });
+    }
+
+    // --- EXPORT LOGIC ---
+    if (exportBtn) {
+      exportBtn.addEventListener('click', () => {
+        const rawJson = payloadElem.getAttribute('data-posts');
+        if (!rawJson) return;
+        
+        const posts = JSON.parse(rawJson);
+        if (!posts.length) {
+          alert('No research to export');
+          return;
+        }
+
+        const headers = ['id', 'title_en', 'title_am', 'slug', 'is_research', 'draft', 'subscribers_only', 'published_at'];
+        const csvRows = [headers.join(',')];
+
+        for (const p of posts) {
+          const row = headers.map(header => {
+            let val = p[header];
+            if (val === null || val === undefined) val = '';
+            let strVal = String(val).replace(/"/g, '""');
+            if (strVal.includes(',') || strVal.includes('\n')) {
+              strVal = `"${strVal}"`;
+            }
+            return strVal;
+          });
+          csvRows.push(row.join(','));
+        }
+
+        const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(csvRows.join('\n'));
+        const a = document.createElement('a');
+        a.setAttribute('href', csvContent);
+        a.setAttribute('download', 'bloom_brief_research.csv');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      });
+    }
+  });
+</script>

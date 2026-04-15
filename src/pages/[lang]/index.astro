@@ -1,0 +1,181 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPosts } from '../../lib/dataService';
+import PillarCard from '../../components/home/PillarCard.astro';
+import PostCard from '../../components/blog/PostCard.astro';
+import OptimizedImage from '../../components/shared/OptimizedImage.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: 'en' } },
+    { params: { lang: 'am' } }
+  ];
+}
+
+const { lang } = Astro.params;
+
+const latestPosts = (await getPosts()).slice(0, 3);
+
+const content = {
+  en: {
+    heroTitle: "Advancing Ethiopian Horticulture through Excellence",
+    heroDesc: "Professional insights, technical research, and dedicated consultancy for the commercial flower and horticulture sector in Ethiopia.",
+    heroCTA1: "View Articles",
+    heroCTA2: "Contact for Consultancy",
+    pillarsTitle: "The Four Pillars of Excellence",
+    pillarsDesc: "Driving growth and sustainability across the value chain.",
+    latestTitle: "Latest Industry Insights",
+    latestCTA: "View All Articles",
+    newsletterTitle: "Stay Ahead in Horticulture",
+    newsletterDesc: "Join our network of industry experts and receive the latest research and market updates directly in your inbox.",
+    newsletterBtn: "Join the Network"
+  },
+  am: {
+    heroTitle: "የኢትዮጵያን ሆርቲካልቸር በጥራት ማሳደግ",
+    heroDesc: "በኢትዮጵያ ለሚገኘው የንግድ አበባ እና ሆርቲካልቸር ዘርፍ ሙያዊ ግንዛቤዎች፣ ቴክኒካዊ ጥናቶች እና የወሰኑ የምክር አገልግሎቶች።",
+    heroCTA1: "ጽሑፎችን ይመልከቱ",
+    heroCTA2: "ምክር ለማግኘት ያግኙን",
+    pillarsTitle: "አራቱ የጥራት ምሰሶዎች",
+    pillarsDesc: "በእሴት ሰንሰለቱ ውስጥ እድገትን እና ዘላቂነትን ማራመድ።",
+    latestTitle: "የቅርብ ጊዜ የዘርፍ ግንዛቤዎች",
+    latestCTA: "ሁሉንም ጽሑፎች ይመልከቱ",
+    newsletterTitle: "በሆርቲካልቸር ዘርፍ ቀዳሚ ይሁኑ",
+    newsletterDesc: "የኢንዱስትሪ ባለሙያዎች መረባችንን ይቀላቀሉ እና የቅርብ ጊዜ ጥናቶችን እና የገበያ መረጃዎችን በቀጥታ በኢሜልዎ ይቀበሉ።",
+    newsletterBtn: "መረቡን ይቀላቀሉ"
+  }
+}[lang as 'en' | 'am'];
+
+const pillars = [
+  {
+    title_en: "Advocacy & Promotion",
+    title_am: "ተሟጋችነት እና ማስተዋወቅ",
+    desc_en: "Championing the Ethiopian horticulture sector on global stages to attract investment and foster growth.",
+    desc_am: "ኢንቨስትመንትን ለመሳብ እና እድገትን ለማሳደግ በዓለም አቀፍ መድረኮች ላይ የኢትዮጵያን የሆርቲካልቸር ዘርፍ መደገፍ።",
+    icon: '<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>'
+  },
+  {
+    title_en: "Technical Research",
+    title_am: "ቴክኒካዊ ጥናት",
+    desc_en: "Data-driven analysis on logistics, market trends, and Good Agricultural Practices (GAP).",
+    desc_am: "በሎጂስቲክስ፣ በገበያ አዝማሚያዎች እና በጥሩ የግብርና አሰራሮች (GAP) ላይ በመረጃ የተደገፈ ትንተና።",
+    icon: '<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>'
+  },
+  {
+    title_en: "Consultancy Services",
+    title_am: "የምክር አገልግሎቶች",
+    desc_en: "Strategic consulting for flower farms and investors looking to enter the Ethiopian market.",
+    desc_am: "የኢትዮጵያን ገበያ ለመቀላቀል ለሚፈልጉ የአበባ እርሻዎች እና ባለሀብቶች ስልታዊ የምክር አገልግሎት።",
+    icon: '<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>'
+  },
+  {
+    title_en: "Sustainability & Social Responsibility",
+    title_am: "ዘላቂነት እና ማህበራዊ ኃላፊነት",
+    desc_en: "Ensuring ethical labor practices and environmental stewardship within the industry.",
+    desc_am: "በኢንዱስትሪው ውስጥ ሥነ-ምግባራዊ የሥራ አሰራሮችን እና የአካባቢ ጥበቃን ማረጋገጥ።",
+    icon: '<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>'
+  }
+];
+---
+
+<BaseLayout lang={lang} title="Bloom Brief | Ethiopian Horticulture Platform">
+  <!-- Hero Section -->
+  <section class="relative h-[80vh] flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 z-0">
+      <OptimizedImage 
+        src="hero.png" 
+        alt="Flowers in a greenhouse" 
+        aspectRatio="21:9" 
+        width={1920}
+        class="w-full h-full"
+      />
+      <div class="absolute inset-0 bg-primary/60 backdrop-blur-sm"></div>
+    </div>
+    
+    <div class="relative z-10 max-w-4xl mx-auto px-4 text-center text-white">
+      <h1 class="text-4xl md:text-6xl font-heading font-extrabold mb-6 leading-tight animate-fade-in">
+        {content.heroTitle}
+      </h1>
+      <p class="text-lg md:text-xl text-blue-100 mb-10 max-w-2xl mx-auto leading-relaxed">
+        {content.heroDesc}
+      </p>
+      <div class="flex flex-col sm:flex-row justify-center gap-4">
+        <a href={`/${lang}/articles/`} class="px-8 py-4 bg-accent hover:bg-blue-400 text-white font-bold rounded shadow-lg transition duration-300 transform hover:scale-105">
+          {content.heroCTA1}
+        </a>
+        <a href={`/${lang}/about/`} class="px-8 py-4 bg-white hover:bg-gray-100 text-primary font-bold rounded shadow-lg transition duration-300 transform hover:scale-105">
+          {content.heroCTA2}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pillars Section -->
+  <section class="py-24 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-heading font-bold text-gray-900 mb-4">{content.pillarsTitle}</h2>
+        <div class="w-20 h-1.5 bg-accent mx-auto mb-6"></div>
+        <p class="text-gray-600 max-w-2xl mx-auto">{content.pillarsDesc}</p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {pillars.map(pillar => (
+          <PillarCard 
+            lang={lang}
+            title_en={pillar.title_en}
+            title_am={pillar.title_am}
+            desc_en={pillar.desc_en}
+            desc_am={pillar.desc_am}
+            icon={pillar.icon}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest Articles Preview -->
+  <section class="py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+        <div>
+          <h2 class="text-3xl font-heading font-bold text-gray-900 mb-2">{content.latestTitle}</h2>
+          <div class="w-16 h-1 bg-accent"></div>
+        </div>
+        <a href={`/${lang}/articles/`} class="text-primary font-bold hover:text-accent transition flex items-center group">
+          {content.latestCTA}
+          <svg class="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {latestPosts.map(post => (
+          <PostCard post={post} lang={lang} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter Ribbon -->
+  <section class="bg-primary py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl font-heading font-bold text-white mb-4">{content.newsletterTitle}</h2>
+      <p class="text-blue-100 mb-8 max-w-xl mx-auto">{content.newsletterDesc}</p>
+      <form class="flex flex-col sm:flex-row justify-center gap-4 max-w-lg mx-auto">
+        <input type="email" placeholder="email@example.com" class="flex-grow px-6 py-4 rounded bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-accent" />
+        <button type="submit" class="px-8 py-4 bg-highlight hover:bg-yellow-500 text-primary font-bold rounded transition transform hover:scale-105">
+          {content.newsletterBtn}
+        </button>
+      </form>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fade-in 1s ease-out forwards;
+  }
+</style>

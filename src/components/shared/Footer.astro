@@ -1,0 +1,105 @@
+---
+import { getPosts } from '../../lib/dataService';
+import SubscribeForm from './SubscribeForm';
+
+const { lang } = Astro.props;
+
+const latestPosts = (await getPosts()).slice(0, 3);
+
+const labels = {
+  en: {
+    bio: "Passionate advocate for the Ethiopian horticulture sector, providing technical research and professional consultancy services.",
+    quickLinks: "Quick Links",
+    recentPosts: "Recent Posts",
+    contact: "Contact",
+    subscribe: "Subscribe to our Newsletter",
+    emailPlaceholder: "Your email address",
+    rights: "All rights reserved. Bloom Brief."
+  },
+  am: {
+    bio: "ለኢትዮጵያ የሆርቲካልቸር ዘርፍ ጥልቅ ጥናት እና ሙያዊ የምክር አገልግሎት የምሰጥ ባለሙያ።",
+    quickLinks: "ፈጣን ሊንኮች",
+    recentPosts: "የቅርብ ጊዜ ጽሑፎች",
+    contact: "አግኙን",
+    subscribe: "ለዜና መጽሔታችን ይመዝገቡ",
+    emailPlaceholder: "የኢሜል አድራሻዎ",
+    rights: "መብቱ በህግ የተጠበቀ ነው። Bloom Brief።"
+  }
+}[lang as 'en' | 'am'];
+
+const links = [
+  { href: `/${lang}/`, text_en: 'Home', text_am: 'ዋና ገጽ' },
+  { href: `/${lang}/articles/`, text_en: 'Articles', text_am: 'ጽሑፎች' },
+  { href: `/${lang}/research/`, text_en: 'Research', text_am: 'ጥናት' },
+  { href: `/${lang}/about/`, text_en: 'About', text_am: 'ስለኛ' },
+];
+---
+
+<footer class="bg-primary text-white pt-16 pb-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+      <!-- Column 1: Bio -->
+      <div>
+        <div class="flex items-center mb-6">
+          <span class="text-2xl font-heading font-bold text-white">Bloom Brief</span>
+        </div>
+        <p class="text-blue-100 text-sm leading-relaxed mb-6 italic">
+          "{labels.bio}"
+        </p>
+        <div class="flex space-x-4">
+          <!-- Social Icons Placeholder -->
+          <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-900 hover:bg-accent transition">L</a>
+          <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-900 hover:bg-accent transition">T</a>
+          <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-900 hover:bg-accent transition">F</a>
+        </div>
+      </div>
+
+      <!-- Column 2: Quick Links -->
+      <div>
+        <h3 class="text-lg font-heading font-bold mb-6 border-b border-blue-800 pb-2 inline-block">{labels.quickLinks}</h3>
+        <ul class="space-y-3">
+          {links.map(link => (
+            <li>
+              <a href={link.href} class="text-blue-100 hover:text-accent transition-colors text-sm">
+                {lang === 'en' ? link.text_en : link.text_am}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Column 3: Recent Posts -->
+      <div>
+        <h3 class="text-lg font-heading font-bold mb-6 border-b border-blue-800 pb-2 inline-block">{labels.recentPosts}</h3>
+        <ul class="space-y-4">
+          {latestPosts.map(post => (
+            <li>
+              <a href={`/${lang}/articles/${post.slug}`} class="group">
+                <span class="text-blue-100 group-hover:text-accent transition-colors text-sm line-clamp-2 leading-snug">
+                  {lang === 'en' ? post.title_en : post.title_am}
+                </span>
+                <span class="text-xs text-blue-300 block mt-1">
+                  {new Date(post.published_at).toLocaleDateString(lang === 'en' ? 'en-US' : 'am-ET')}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Column 4: Contact & Newsletter -->
+      <div>
+        <h3 class="text-lg font-heading font-bold mb-6 border-b border-blue-800 pb-2 inline-block">{labels.contact}</h3>
+        <p class="text-blue-100 text-sm mb-4">Addis Ababa, Ethiopia</p>
+        <p class="text-blue-100 text-sm mb-6">contact@ethiopianhorticulture.com</p>
+        
+        <h4 class="text-sm font-bold uppercase tracking-wider text-accent mb-4">{labels.subscribe}</h4>
+        <SubscribeForm client:load lang={lang as 'en' | 'am'} />
+      </div>
+    </div>
+
+    <div class="border-t border-blue-900 pt-8 text-center text-xs text-blue-300">
+      <p>&copy; {new Date().getFullYear()} {labels.rights}</p>
+    </div>
+  </div>
+</footer>

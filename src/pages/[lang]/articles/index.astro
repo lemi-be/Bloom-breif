@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PostCard from '../../../components/blog/PostCard.astro';
+import { getPosts } from '../../../lib/dataService';
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: 'en' } },
+    { params: { lang: 'am' } }
+  ];
+}
+
+const { lang } = Astro.params;
+
+// Fetch articles
+const posts = await getPosts();
+
+const pageTitle = lang === 'en' ? 'Articles & Insights' : 'ጽሑፎች እና ግንዛቤዎች';
+const breadcrumbHome = lang === 'en' ? 'Home' : 'ዋና ገጽ';
+---
+
+<BaseLayout lang={lang} title={pageTitle}>
+  <div class="bg-primary text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav class="text-sm text-blue-200 mb-4">
+        <a href={`/${lang}/`} class="hover:text-white transition">{breadcrumbHome}</a> &gt; <span>{pageTitle}</span>
+      </nav>
+      <h1 class="text-4xl font-heading font-bold">{pageTitle}</h1>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- Main Feed -->
+      <div class="w-full lg:w-3/4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {posts.map(post => (
+            <PostCard post={post} lang={lang} />
+          ))}
+        </div>
+      </div>
+      
+      <!-- Sidebar Desktop Only -->
+      <aside class="hidden lg:block lg:w-1/4">
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 sticky top-24">
+          <h3 class="font-heading font-bold text-lg text-gray-900 mb-4">{lang === 'en' ? 'Trending Topics' : 'ታዋቂ ርዕሶች'}</h3>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full hover:bg-gray-200 cursor-pointer transition">Rose Exports</span>
+            <span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full hover:bg-gray-200 cursor-pointer transition">GAP</span>
+            <span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full hover:bg-gray-200 cursor-pointer transition">Logistics</span>
+          </div>
+          
+          <div class="mt-8">
+            <h3 class="font-heading font-bold text-lg text-gray-900 mb-4">{lang === 'en' ? 'Search' : 'ፈልግ'}</h3>
+            <input type="text" placeholder={lang === 'en' ? 'Search articles...' : 'ጽሑፎችን ፈልግ...'} class="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-accent focus:border-accent outline-none" />
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>

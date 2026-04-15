@@ -1,0 +1,170 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import OptimizedImage from '../../components/shared/OptimizedImage.astro';
+import ContactForm from '../../components/shared/ContactForm.jsx';
+import { getSiteContent } from '../../lib/dataService';
+
+export async function getStaticPaths() {
+  return [
+    { params: { lang: 'en' } },
+    { params: { lang: 'am' } }
+  ];
+}
+
+const { lang } = Astro.params;
+const dynamicContent = await getSiteContent('about_page');
+
+const content = {
+  en: {
+    title: "About Bloom Brief",
+    subtitle: "Professional Expertise in Ethiopian Horticulture",
+    introTitle: "Pioneering Sustainable Growth",
+    introText: dynamicContent?.introText_en || "With over a decade of experience in the Ethiopian horticulture landscape, I am dedicated to bridging the gap between technical research and commercial success. My work focuses on empowering flower farms and investors with data-driven strategies and Good Agricultural Practices (GAP).",
+    expertiseTitle: "Core Areas of Expertise",
+    expertise: [
+      { title: "Trade Logistics", desc: "Optimizing cold chain management and export pathways for seasonal blooms." },
+      { title: "Market Intelligence", desc: "Providing actionable insights on global market trends and price fluctuations." },
+      { title: "Sustainable Farming", desc: "Implementing environmentally friendly practices that meet international standards." },
+      { title: "Strategic Consultancy", desc: "Advising investors on navigating the complex regulatory and operational landscape in Ethiopia." }
+    ],
+    contactTitle: "Get in Touch",
+    contactText: "Interested in a consultancy partnership or have a technical enquiry? I am available for strategic collaborations across the horticulture value chain.",
+    email: "contact@ethiopianhorticulture.com",
+    phone: "+251 911 000 000",
+    location: "Addis Ababa, Ethiopia"
+  },
+  am: {
+    title: "ስለ Bloom Brief",
+    subtitle: "በኢትዮጵያ ሆርቲካልቸር ዘርፍ ሙያዊ ብቃት",
+    introTitle: "ዘላቂ እድገትን መምራት",
+    introText: dynamicContent?.introText_am || "በኢትዮጵያ የሆርቲካልቸር ዘርፍ ከአሥር ዓመት በላይ ልምድ ያለኝ ሲሆን፣ በቴክኒካዊ ጥናት እና በንግድ ስኬት መካከል ያለውን ልዩነት ለመሙላት እሰራለሁ። ስራዬ የአበባ እርሻዎችን እና ባለሀብቶችን በመረጃ በተደገፉ ስልቶች እና በጥሩ የግብርና አሰራሮች (GAP) ማብቃትን ያተኩራል።",
+    expertiseTitle: "ዋና የሙያ ዘርፎች",
+    expertise: [
+      { title: "የንግድ ሎጂስቲክስ", desc: "ለወቅታዊ አበቦች የቀዝቃዛ ሰንሰለት አስተዳደርን እና የኤክስፖርት መንገዶችን ማመቻቸት።" },
+      { title: "የገበያ መረጃ", desc: "ስለ ዓለም አቀፍ የገበያ አዝማሚያዎች እና የዋጋ መለዋወጥ ተግባራዊ ግንዛቤዎችን መስጠት።" },
+      { title: "ዘላቂ እርሻ", desc: "ዓለም አቀፍ ደረጃዎችን የሚያሟሉ የአካባቢ ተስማሚ አሰራሮችን መተግበር።" },
+      { title: "ስልታዊ ምክክር", desc: "በኢትዮጵያ ያለውን ውስብስብ የቁጥጥር እና የአሰራር ሁኔታ ለመረዳት ለባለሀብቶች ምክር መስጠት።" }
+    ],
+    contactTitle: "ያግኙን",
+    contactText: "በምክር አጋርነት ላይ ፍላጎት አለዎት ወይስ ቴክኒካዊ ጥያቄ አለዎት? በሆርቲካልቸር እሴት ሰንሰለት ውስጥ ለስልታዊ ትብብር ዝግጁ ነኝ።",
+    email: "contact@ethiopianhorticulture.com",
+    phone: "+251 911 000 000",
+    location: "አዲስ አበባ፣ ኢትዮጵያ"
+  }
+}[lang as 'en' | 'am'];
+---
+
+<BaseLayout 
+  lang={lang} 
+  title={`${content.title} | Bloom Brief`} 
+  description={content.introText}
+  image="/profile-headshot.png"
+>
+  <!-- Header Section -->
+  <div class="bg-gray-50 border-b border-gray-100 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-4xl md:text-5xl font-heading font-bold text-primary mb-4">{content.title}</h1>
+      <p class="text-lg text-accent font-semibold tracking-wide uppercase">{content.subtitle}</p>
+    </div>
+  </div>
+
+  <!-- Profile & Intro -->
+  <section class="py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col lg:flex-row items-center gap-16">
+        <div class="w-full lg:w-1/3">
+          <div class="relative group">
+            <div class="absolute -inset-4 bg-accent/10 rounded-xl transform rotate-3 group-hover:rotate-1 transition-transform"></div>
+            <OptimizedImage 
+              src="profile-headshot.png" 
+              alt="Professional Profile" 
+              aspectRatio="1:1" 
+              width={600}
+              class="relative rounded-lg shadow-2xl border-4 border-white grayscale hover:grayscale-0 transition-all duration-500"
+            />
+          </div>
+        </div>
+        <div class="w-full lg:w-2/3">
+          <h2 class="text-3xl font-heading font-bold text-gray-900 mb-6">{content.introTitle}</h2>
+          <div class="w-20 h-1.5 bg-brand mb-8"></div>
+          <p class="text-xl text-gray-700 leading-relaxed mb-8">
+            {content.introText}
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+            {content.expertise.map(item => (
+              <div class="border-l-4 border-accent pl-6 py-2">
+                <h3 class="text-lg font-bold text-primary mb-2">{item.title}</h3>
+                <p class="text-gray-600 text-sm">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Expertise / Detailed Bio Placeholder -->
+  <section class="py-24 bg-primary text-white overflow-hidden relative">
+    <div class="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="max-w-3xl">
+        <h2 class="text-3xl font-heading font-bold mb-12">{content.expertiseTitle}</h2>
+        <div class="space-y-8">
+          <div class="flex gap-6">
+            <span class="text-4xl text-accent opacity-50 font-heading">01</span>
+            <div>
+              <p class="text-lg opacity-90 leading-relaxed">
+                {lang === 'en' ? "Empowering local exporters to meet EU and Middle Eastern standards through technical compliance audits." : "አካባቢያዊ ላኪዎች የቴክኒክ ተገዢነት ኦዲቶችን በማካሄድ የአውሮፓ ህብረት እና የመካከለኛው ምስራቅ ደረጃዎችን እንዲያሟሉ ማብቃት።"}
+              </p>
+            </div>
+          </div>
+          <div class="flex gap-6">
+            <span class="text-4xl text-accent opacity-50 font-heading">02</span>
+            <div>
+              <p class="text-lg opacity-90 leading-relaxed">
+                {lang === 'en' ? "Bridging data gaps in the sector by publishing semi-annual market intelligence reports." : "በየግማሽ ዓመቱ የገበያ መረጃ ሪፖርቶችን በማተም በዘርፉ ያለውን የመረጃ ክፍተት መሙላት።"}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="py-24 bg-white" id="contact">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-gray-50 rounded-2xl p-8 md:p-16 border border-gray-100 flex flex-col lg:flex-row gap-16 items-center">
+        <div class="w-full lg:w-1/2">
+          <h2 class="text-3xl font-heading font-bold text-gray-900 mb-6">{content.contactTitle}</h2>
+          <p class="text-gray-600 mb-10 leading-relaxed italic">
+            "{content.contactText}"
+          </p>
+          <div class="space-y-6">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-white shadow-sm flex items-center justify-center rounded-lg text-accent">
+                📧
+              </div>
+              <div>
+                <p class="text-xs text-gray-400 uppercase font-black">Email</p>
+                <p class="text-primary font-bold">{content.email}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-white shadow-sm flex items-center justify-center rounded-lg text-accent">
+                📞
+              </div>
+              <div>
+                <p class="text-xs text-gray-400 uppercase font-black">Phone</p>
+                <p class="text-primary font-bold">{content.phone}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="w-full lg:w-1/2">
+          <ContactForm client:visible lang={lang} />
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
