@@ -1,5 +1,7 @@
 # build output
 dist/
+.vercel/
+.nitro/
 # generated types
 .astro/
 
