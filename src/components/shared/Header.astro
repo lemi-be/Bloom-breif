@@ -43,8 +43,27 @@ const togglePath = currentPath.replace(`/${lang}/`, `/${otherLang}/`);
           <!-- Loading / default state -->
           <div class="w-8 h-8 rounded-full bg-gray-100 animate-pulse border border-gray-200"></div>
         </div>
+
+        <!-- Hamburger Menu Button -->
+        <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-600 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-lg transition-colors" aria-label="Toggle Menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
       </div>
     </div>
+  </div>
+
+  <!-- Mobile Navigation Drawer -->
+  <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 animate-in slide-in-from-top duration-300 overflow-hidden shadow-inner">
+    <nav class="flex flex-col p-4 space-y-1">
+      {links.map(link => (
+        <a href={link.href} class="px-4 py-3 text-sm font-bold text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-all flex items-center justify-between group">
+          {lang === 'en' ? link.text_en : link.text_am}
+          <span class="text-gray-300 group-hover:translate-x-1 transition-transform">→</span>
+        </a>
+      ))}
+    </nav>
   </div>
 </header>
 
@@ -54,6 +73,20 @@ const togglePath = currentPath.replace(`/${lang}/`, `/${otherLang}/`);
   // Function to initialize the auth header
   async function initAuthHeader() {
     const container = document.getElementById('auth-status-container');
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    if (mobileMenuBtn && mobileMenu) {
+      mobileMenuBtn.addEventListener('click', () => {
+        const isHidden = mobileMenu.classList.contains('hidden');
+        if (isHidden) {
+          mobileMenu.classList.remove('hidden');
+        } else {
+          mobileMenu.classList.add('hidden');
+        }
+      });
+    }
+
     if (!container) return;
     
     // Check current session authentically
