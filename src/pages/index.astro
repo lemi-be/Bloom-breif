@@ -1,0 +1,11 @@
+---
+// src/pages/index.astro
+// Root redirect with browser language detection
+export const prerender = false;
+
+const acceptLanguage = Astro.request.headers.get('accept-language') || '';
+const prefersAmharic = acceptLanguage.toLowerCase().includes('am') || acceptLanguage.toLowerCase().includes('et');
+const defaultLang = prefersAmharic ? 'am' : 'en';
+
+return Astro.redirect(`/${defaultLang}/`);
+---

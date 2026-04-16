@@ -1,0 +1,229 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getAdminPosts } from '../../lib/dataService';
+
+const posts = await getAdminPosts(Astro.locals.supabase);
+const liveCount = posts.filter(p => !p.draft).length;
+const draftCount = posts.filter(p => p.draft).length;
+---
+
+<AdminLayout title="Content Archive">
+
+  <!-- Sub-stats -->
+  <div class="grid grid-cols-3 gap-4 mb-8">
+    <div class="admin-card flex items-center gap-4">
+      <div class="w-10 h-10 rounded bg-[#003366] flex items-center justify-center flex-shrink-0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/>
+        </svg>
+      </div>
+      <div>
+        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Total</p>
+        <p class="text-2xl font-heading font-black text-gray-900">{posts.length}</p>
+      </div>
+    </div>
+    <div class="admin-card flex items-center gap-4">
+      <div class="w-10 h-10 rounded bg-[#1B4332] flex items-center justify-center flex-shrink-0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20,6 9,17 4,12"/>
+        </svg>
+      </div>
+      <div>
+        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Live</p>
+        <p class="text-2xl font-heading font-black text-gray-900">{liveCount}</p>
+      </div>
+    </div>
+    <div class="admin-card flex items-center gap-4">
+      <div class="w-10 h-10 rounded bg-[#b45309] flex items-center justify-center flex-shrink-0">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+      </div>
+      <div>
+        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Drafts</p>
+        <p class="text-2xl font-heading font-black text-gray-900">{draftCount}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Posts Table -->
+  <div class="admin-card">
+    <div class="flex justify-between items-center mb-5 pb-4 border-b border-gray-100">
+      <div>
+        <h2 class="text-sm font-heading font-extrabold text-gray-900 uppercase tracking-wider">All Articles</h2>
+        <p class="text-xs text-gray-400 font-medium mt-0.5">Articles and technical research reports</p>
+      </div>
+      <div class="flex gap-2">
+        <button id="filterBtn" class="px-3 py-2 border border-gray-200 rounded text-xs font-black text-gray-500 hover:bg-gray-50 transition uppercase tracking-widest">Filter: All</button>
+        <button id="exportBtn" class="px-3 py-2 border border-gray-200 rounded text-xs font-black text-gray-500 hover:bg-gray-50 transition uppercase tracking-widest">Export</button>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto admin-table">
+      <table class="w-full text-left" id="postsTable">
+        <thead>
+          <tr class="text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">
+            <th class="pb-3">Title & Slug</th>
+            <th class="pb-3 text-center">Type</th>
+            <th class="pb-3 text-center">Status</th>
+            <th class="pb-3">Published</th>
+            <th class="pb-3 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+          {posts.map(post => (
+            <tr class="post-row" data-status={post.draft ? 'draft' : 'live'}>
+              <td class="py-4 min-w-[260px] pr-4">
+                <p class="text-gray-900 font-semibold text-sm leading-tight">{post.title_en}</p>
+                <p class="text-[10px] text-gray-400 font-mono mt-0.5">{post.slug}</p>
+              </td>
+              <td class="py-4 text-center">
+                <span class={`px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-widest ${post.is_research ? 'bg-[#1B4332]/10 text-[#1B4332]' : 'bg-[#003366]/10 text-[#003366]'}`}>
+                  {post.is_research ? 'Research' : 'Article'}
+                </span>
+              </td>
+              <td class="py-4 text-center">
+                <span class={`px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-widest ${post.draft ? 'badge-draft' : 'badge-live'}`}>
+                  {post.draft ? 'Draft' : 'Live'}
+                </span>
+              </td>
+              <td class="py-4 text-sm text-gray-500 font-medium">
+                {new Date(post.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              </td>
+              <td class="py-4 text-right">
+                <div class="flex justify-end gap-2">
+                  <button data-action="toggle-visibility" data-slug={post.slug} data-draft={post.draft.toString()} class={`px-3 py-1.5 border border-gray-200 rounded text-[11px] font-black hover:bg-gray-50 transition uppercase tracking-widest ${post.draft ? 'text-emerald-600' : 'text-amber-600'}`}>
+                    {post.draft ? 'Publish' : 'Hide'}
+                  </button>
+                  <a href={`/admin/editor?slug=${post.slug}`} class="px-3 py-1.5 border border-gray-200 rounded text-[11px] font-black text-gray-600 hover:bg-gray-50 hover:text-[#003366] transition uppercase tracking-widest">Edit</a>
+                  <a href={`/en/articles/${post.slug}/`} target="_blank" class="px-3 py-1.5 border border-gray-200 rounded text-[11px] font-black text-gray-600 hover:bg-gray-50 transition uppercase tracking-widest">View</a>
+                  <button data-action="delete-post" data-slug={post.slug} class="px-3 py-1.5 border border-red-200 rounded text-[11px] font-black text-red-600 hover:bg-red-50 transition uppercase tracking-widest">Delete</button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="posts-payload" data-posts={JSON.stringify(posts)} class="hidden"></div>
+</AdminLayout>
+
+<script>
+  import { supabase } from '../../lib/supabase';
+
+  document.addEventListener('astro:page-load', () => {
+    const filterBtn = document.getElementById('filterBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const rows = document.querySelectorAll('.post-row');
+    const payloadElem = document.getElementById('posts-payload');
+
+    if (!payloadElem) return; // Not on the posts page
+
+    // --- ROW ACTIONS (Hide/Delete) ---
+    const toggleBtns = document.querySelectorAll('[data-action="toggle-visibility"]');
+    toggleBtns.forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const slug = btn.getAttribute('data-slug');
+        const isDraft = btn.getAttribute('data-draft') === 'true';
+        
+        if (!confirm(`Are you sure you want to ${isDraft ? 'publish this draft' : 'hide this live post'}?`)) return;
+        
+        btn.textContent = 'Updating...';
+        (btn as HTMLButtonElement).disabled = true;
+        
+        const { error } = await supabase.from('posts').update({ draft: !isDraft }).eq('slug', slug);
+        if (error) {
+          alert('Error updating post visibility: ' + error.message);
+          btn.textContent = isDraft ? 'Publish' : 'Hide';
+          (btn as HTMLButtonElement).disabled = false;
+        } else {
+          window.location.reload();
+        }
+      });
+    });
+
+    const deleteBtns = document.querySelectorAll('[data-action="delete-post"]');
+    deleteBtns.forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const slug = btn.getAttribute('data-slug');
+        if (!confirm(`Warning: You are about to permanently delete "${slug}".\n\nThis cannot be undone. Proceed?`)) return;
+        
+        btn.textContent = 'Deleting...';
+        (btn as HTMLButtonElement).disabled = true;
+
+        const { error } = await supabase.from('posts').delete().eq('slug', slug);
+        if (error) {
+          alert('Error deleting post: ' + error.message);
+          btn.textContent = 'Delete';
+          (btn as HTMLButtonElement).disabled = false;
+        } else {
+          window.location.reload();
+        }
+      });
+    });
+
+    // --- FILTER LOGIC ---
+    // State cycle: 0 -> All, 1 -> Live, 2 -> Drafts
+    let filterState = 0;
+    const filterLabels = ['Filter: All', 'Filter: Live', 'Filter: Drafts'];
+
+    if (filterBtn) {
+      filterBtn.addEventListener('click', () => {
+        filterState = (filterState + 1) % 3;
+        filterBtn.textContent = filterLabels[filterState];
+        
+        rows.forEach((row) => {
+          const status = (row as HTMLElement).dataset.status;
+          if (filterState === 0) {
+            (row as HTMLElement).style.display = '';
+          } else if (filterState === 1) {
+            (row as HTMLElement).style.display = status === 'live' ? '' : 'none';
+          } else if (filterState === 2) {
+            (row as HTMLElement).style.display = status === 'draft' ? '' : 'none';
+          }
+        });
+      });
+    }
+
+    // --- EXPORT LOGIC ---
+    if (exportBtn) {
+      exportBtn.addEventListener('click', () => {
+        const rawJson = payloadElem.getAttribute('data-posts');
+        if (!rawJson) return;
+        
+        const posts = JSON.parse(rawJson);
+        if (!posts.length) {
+          alert('No posts to export');
+          return;
+        }
+
+        // Generate CSV string
+        const headers = ['id', 'title_en', 'title_am', 'slug', 'is_research', 'draft', 'subscribers_only', 'published_at'];
+        const csvRows = [headers.join(',')];
+
+        for (const p of posts) {
+          const row = headers.map(header => {
+            let val = p[header];
+            if (val === null || val === undefined) val = '';
+            let strVal = String(val).replace(/"/g, '""');
+            if (strVal.includes(',') || strVal.includes('\n')) {
+              strVal = `"${strVal}"`;
+            }
+            return strVal;
+          });
+          csvRows.push(row.join(','));
+        }
+
+        const csvContent = "data:text/csv;charset=utf-8," + encodeURIComponent(csvRows.join('\n'));
+        const a = document.createElement('a');
+        a.setAttribute('href', csvContent);
+        a.setAttribute('download', 'bloom_brief_articles.csv');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      });
+    }
+  });
+</script>
