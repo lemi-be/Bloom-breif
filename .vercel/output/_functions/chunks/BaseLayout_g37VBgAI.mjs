@@ -1,7 +1,7 @@
 import { c as createComponent } from './astro-component_BggQPHv2.mjs';
 import 'piccolore';
 import { T as createRenderInstruction, B as maybeRenderHead, Q as renderTemplate, a3 as addAttribute, b8 as renderHead, b9 as renderSlot } from './sequence_bpEQWQ1D.mjs';
-import { r as renderComponent } from './entrypoint_CK6So5q9.mjs';
+import { r as renderComponent } from './entrypoint_CsMLnXWo.mjs';
 import 'clsx';
 import { jsxs, Fragment, jsx } from 'react/jsx-runtime';
 import { useState, useRef, useEffect, useMemo } from 'react';
