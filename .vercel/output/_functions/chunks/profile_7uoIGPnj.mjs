@@ -1,10 +1,10 @@
 import { c as createComponent } from './astro-component_BggQPHv2.mjs';
 import 'piccolore';
 import { Q as renderTemplate, B as maybeRenderHead, a3 as addAttribute } from './sequence_bpEQWQ1D.mjs';
-import { r as renderComponent } from './entrypoint_DJd8_lgm.mjs';
-import { r as renderScript } from './script_DSQn3iPM.mjs';
-import { $ as $$BaseLayout } from './BaseLayout_DXF81OJg.mjs';
+import { r as renderComponent } from './entrypoint_CK6So5q9.mjs';
+import { $ as $$BaseLayout, r as renderScript } from './BaseLayout_CkMgZf4J.mjs';
 
+const prerender = false;
 const $$Profile = createComponent(async ($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$props, $$slots);
   Astro2.self = $$Profile;
@@ -66,6 +66,7 @@ const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: $$Profile,
   file: $$file,
+  prerender,
   url: $$url
 }, Symbol.toStringTag, { value: 'Module' }));
 

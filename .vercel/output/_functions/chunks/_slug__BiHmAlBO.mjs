@@ -1,10 +1,8 @@
 import { c as createComponent } from './astro-component_BggQPHv2.mjs';
 import 'piccolore';
 import { B as maybeRenderHead, a3 as addAttribute, Q as renderTemplate, b7 as unescapeHTML } from './sequence_bpEQWQ1D.mjs';
-import { r as renderComponent } from './entrypoint_DJd8_lgm.mjs';
-import { r as renderScript } from './script_DSQn3iPM.mjs';
-import { $ as $$BaseLayout } from './BaseLayout_DXF81OJg.mjs';
-import { d as getPostBySlug } from './dataService_BiMXrbA5.mjs';
+import { r as renderComponent } from './entrypoint_CK6So5q9.mjs';
+import { g as getPostBySlug, $ as $$BaseLayout, r as renderScript } from './BaseLayout_CkMgZf4J.mjs';
 import 'clsx';
 
 const ENDPOINT = "https://ik.imagekit.io/bvamf2oxo";
@@ -140,6 +138,7 @@ function lexicalToHtml(content) {
   }
 }
 
+const prerender = false;
 const $$slug = createComponent(async ($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$props, $$slots);
   Astro2.self = $$slug;
@@ -173,6 +172,7 @@ const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: $$slug,
   file: $$file,
+  prerender,
   url: $$url
 }, Symbol.toStringTag, { value: 'Module' }));
 

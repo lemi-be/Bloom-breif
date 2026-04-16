@@ -20,34 +20,6 @@
 			"dest": "_render"
 		},
 		{
-			"src": "^/admin/editor/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/admin/posts/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/admin/research/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/admin/settings/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/admin/subscribers/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/admin/?$",
-			"dest": "_render"
-		},
-		{
-			"src": "^/login/?$",
-			"dest": "_render"
-		},
-		{
 			"src": "^/([^/]+?)/articles/([^/]+?)/?$",
 			"dest": "_render"
 		},

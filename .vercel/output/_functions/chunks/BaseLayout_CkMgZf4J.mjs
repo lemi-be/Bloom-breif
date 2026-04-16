@@ -1,19 +1,53 @@
 import { c as createComponent } from './astro-component_BggQPHv2.mjs';
 import 'piccolore';
-import { B as maybeRenderHead, Q as renderTemplate, a3 as addAttribute, b8 as renderHead, b9 as renderSlot } from './sequence_bpEQWQ1D.mjs';
-import { r as renderComponent } from './entrypoint_DJd8_lgm.mjs';
-/* empty css                 */
+import { T as createRenderInstruction, B as maybeRenderHead, Q as renderTemplate, a3 as addAttribute, b8 as renderHead, b9 as renderSlot } from './sequence_bpEQWQ1D.mjs';
+import { r as renderComponent } from './entrypoint_CK6So5q9.mjs';
 import 'clsx';
-import { r as renderScript } from './script_DSQn3iPM.mjs';
 import { jsxs, Fragment, jsx } from 'react/jsx-runtime';
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { Search, Command, Loader2, X, FileText, CheckCircle2, ArrowRight, Sparkles } from 'lucide-react';
-import { s as supabase, e as getPosts } from './dataService_BiMXrbA5.mjs';
-import { $ as $$SEO } from './SEO_DfgYPyEL.mjs';
+import { createBrowserClient } from '@supabase/ssr';
+
+async function renderScript(result, id) {
+  const inlined = result.inlinedScripts.get(id);
+  let content = "";
+  if (inlined != null) {
+    if (inlined) {
+      content = `<script type="module">${inlined}</script>`;
+    }
+  } else {
+    const resolved = await result.resolve(id);
+    content = `<script type="module" src="${result.userAssetsBase ? (result.base === "/" ? "" : result.base) + result.userAssetsBase : ""}${resolved}"></script>`;
+  }
+  return createRenderInstruction({ type: "script", id, content });
+}
 
 const $$TopBar = createComponent(($$result, $$props, $$slots) => {
   return renderTemplate`${maybeRenderHead()}<div class="bg-primary text-white text-sm py-2 px-6 flex justify-between items-center hidden md:flex"> <div class="flex items-center space-x-4"> <span>contact@ethiopianhorticulture.com</span> <span>+251 911 123 456</span> </div> <div class="flex space-x-4"> <a href="#" class="hover:text-accent transition">LinkedIn</a> <a href="#" class="hover:text-accent transition">Telegram</a> <a href="#" class="hover:text-accent transition">Facebook</a> </div> </div>`;
 }, "C:/Users/User/Desktop/Blog/src/components/shared/TopBar.astro", void 0);
+
+const supabaseUrl = "https://pszozolmrnqnpvcfkbny.supabase.co";
+const supabaseKey = "sb_publishable_PFDvopQ2KHVm5e9xCiUZCg_7euujotd";
+const supabase = createBrowserClient(supabaseUrl, supabaseKey, {
+  cookies: {
+    get(key) {
+      if (typeof document === "undefined") return "";
+      const cookie = document.cookie.split("; ").find((row) => row.startsWith(`${key}=`));
+      return cookie ? decodeURIComponent(cookie.split("=")[1]) : "";
+    },
+    set(key, value, options) {
+      if (typeof document === "undefined") return;
+      let cookie = `${key}=${encodeURIComponent(value)}; path=/; max-age=${options?.maxAge || 60 * 60 * 24 * 7}`;
+      if (options?.domain) cookie += `; domain=${options.domain}`;
+      if (options?.secure) cookie += "; secure";
+      document.cookie = cookie;
+    },
+    remove(key, options) {
+      if (typeof document === "undefined") return;
+      document.cookie = `${key}=; path=/; max-age=0`;
+    }
+  }
+});
 
 function SearchModal({ lang }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -215,6 +249,25 @@ Bloom Brief
 </a> </div> <nav class="hidden md:flex space-x-8"> ${links.map((link) => renderTemplate`<a${addAttribute(link.href, "href")} class="text-gray-700 hover:text-accent font-medium px-3 py-2 rounded-md transition-colors"> ${lang === "en" ? link.text_en : link.text_am} </a>`)} </nav> <div class="flex items-center space-x-4"> ${renderComponent($$result, "SearchModal", SearchModal, { "client:load": true, "lang": lang, "client:component-hydration": "load", "client:component-path": "C:/Users/User/Desktop/Blog/src/components/shared/SearchModal.jsx", "client:component-export": "default" })} <a${addAttribute(togglePath, "href")} class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 text-sm font-bold text-primary"> ${otherLangName} </a> <!-- Auth Status Container --> <div id="auth-status-container" class="relative group ml-2"> <!-- Loading / default state --> <div class="w-8 h-8 rounded-full bg-gray-100 animate-pulse border border-gray-200"></div> </div> </div> </div> </div> </header> ${renderScript($$result, "C:/Users/User/Desktop/Blog/src/components/shared/Header.astro?astro&type=script&index=0&lang.ts")}`;
 }, "C:/Users/User/Desktop/Blog/src/components/shared/Header.astro", void 0);
 
+async function getPosts() {
+  const { data, error } = await supabase.from("posts").select("*").eq("draft", false).order("published_at", { ascending: false });
+  if (error) {
+    console.error("Error fetching posts:", error);
+    return [];
+  }
+  return data;
+}
+async function getPostBySlug(slug) {
+  const { data, error } = await supabase.from("posts").select("*").eq("slug", slug).single();
+  if (error) {
+    if (error.code !== "PGRST116") {
+      console.error("Error fetching post by slug:", error);
+    }
+    return null;
+  }
+  return data;
+}
+
 function SubscribeForm({ lang = "en" }) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -349,6 +402,21 @@ const $$Footer = createComponent(async ($$result, $$props, $$slots) => {
 </p> <div class="flex space-x-4"> <!-- Social Icons Placeholder --> <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-900 hover:bg-accent transition">L</a> <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-900 hover:bg-accent transition">T</a> <a href="#" class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-900 hover:bg-accent transition">F</a> </div> </div> <!-- Column 2: Quick Links --> <div> <h3 class="text-lg font-heading font-bold mb-6 border-b border-blue-800 pb-2 inline-block">${labels.quickLinks}</h3> <ul class="space-y-3"> ${links.map((link) => renderTemplate`<li> <a${addAttribute(link.href, "href")} class="text-blue-100 hover:text-accent transition-colors text-sm"> ${lang === "en" ? link.text_en : link.text_am} </a> </li>`)} </ul> </div> <!-- Column 3: Recent Posts --> <div> <h3 class="text-lg font-heading font-bold mb-6 border-b border-blue-800 pb-2 inline-block">${labels.recentPosts}</h3> <ul class="space-y-4"> ${latestPosts.map((post) => renderTemplate`<li> <a${addAttribute(`/${lang}/articles/${post.slug}`, "href")} class="group"> <span class="text-blue-100 group-hover:text-accent transition-colors text-sm line-clamp-2 leading-snug"> ${lang === "en" ? post.title_en : post.title_am} </span> <span class="text-xs text-blue-300 block mt-1"> ${new Date(post.published_at).toLocaleDateString(lang === "en" ? "en-US" : "am-ET")} </span> </a> </li>`)} </ul> </div> <!-- Column 4: Contact & Newsletter --> <div> <h3 class="text-lg font-heading font-bold mb-6 border-b border-blue-800 pb-2 inline-block">${labels.contact}</h3> <p class="text-blue-100 text-sm mb-4">Addis Ababa, Ethiopia</p> <p class="text-blue-100 text-sm mb-6">contact@ethiopianhorticulture.com</p> <h4 class="text-sm font-bold uppercase tracking-wider text-accent mb-4">${labels.subscribe}</h4> ${renderComponent($$result, "SubscribeForm", SubscribeForm, { "client:load": true, "lang": lang, "client:component-hydration": "load", "client:component-path": "C:/Users/User/Desktop/Blog/src/components/shared/SubscribeForm", "client:component-export": "default" })} </div> </div> <div class="border-t border-blue-900 pt-8 text-center text-xs text-blue-300"> <p>&copy; ${(/* @__PURE__ */ new Date()).getFullYear()} ${labels.rights}</p> </div> </div> </footer>`;
 }, "C:/Users/User/Desktop/Blog/src/components/shared/Footer.astro", void 0);
 
+const $$SEO = createComponent(($$result, $$props, $$slots) => {
+  const Astro2 = $$result.createAstro($$props, $$slots);
+  Astro2.self = $$SEO;
+  const {
+    title,
+    description = "Bloom Brief | Professional insights, technical research, and designated consultancy for the commercial flower and horticulture sector in Ethiopia.",
+    image = "/hero.png",
+    // Default image path in public directory
+    url = "https://bloombrief.ethiopianhorticulture.com",
+    type = "website"
+  } = Astro2.props;
+  const imageUrl = image.startsWith("http") ? image : `${url}${image}`;
+  return renderTemplate`<!-- Core Meta --><title>${title}</title><meta name="description"${addAttribute(description, "content")}><meta name="title"${addAttribute(title, "content")}><meta name="robots" content="index, follow"><meta name="author" content="Bloom Brief"><!-- Open Graph / LinkedIn / Facebook / WhatsApp --><meta property="og:type"${addAttribute(type, "content")}><meta property="og:url"${addAttribute(url, "content")}><meta property="og:title"${addAttribute(title, "content")}><meta property="og:description"${addAttribute(description, "content")}><meta property="og:image"${addAttribute(imageUrl, "content")}><meta property="og:site_name" content="Bloom Brief"><!-- Twitter --><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url"${addAttribute(url, "content")}><meta property="twitter:title"${addAttribute(title, "content")}><meta property="twitter:description"${addAttribute(description, "content")}><meta property="twitter:image"${addAttribute(imageUrl, "content")}><!-- Canonical URL --><link rel="canonical"${addAttribute(url, "href")}>`;
+}, "C:/Users/User/Desktop/Blog/src/components/shared/SEO.astro", void 0);
+
 const $$BaseLayout = createComponent(($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$props, $$slots);
   Astro2.self = $$BaseLayout;
@@ -356,4 +424,4 @@ const $$BaseLayout = createComponent(($$result, $$props, $$slots) => {
   return renderTemplate`<html${addAttribute(lang, "lang")}> <head><meta charset="utf-8"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator"${addAttribute(Astro2.generator, "content")}>${renderComponent($$result, "SEO", $$SEO, { "title": title, "description": description, "image": image, "url": Astro2.url.href })}<!-- Fonts --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;800&family=Noto+Sans+Ethiopic:wght@400;700&display=swap" rel="stylesheet">${renderHead()}</head> <body class="bg-gray-50 flex flex-col min-h-screen"> ${renderComponent($$result, "TopBar", $$TopBar, {})} ${renderComponent($$result, "Header", $$Header, { "lang": lang })} <main class="flex-grow"> ${renderSlot($$result, $$slots["default"])} </main> ${renderComponent($$result, "Footer", $$Footer, { "lang": lang })} </body></html>`;
 }, "C:/Users/User/Desktop/Blog/src/layouts/BaseLayout.astro", void 0);
 
-export { $$BaseLayout as $ };
+export { $$BaseLayout as $, getPostBySlug as g, renderScript as r };
