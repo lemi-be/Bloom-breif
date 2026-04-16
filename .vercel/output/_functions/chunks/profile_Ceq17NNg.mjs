@@ -1,8 +1,8 @@
 import { c as createComponent } from './astro-component_BggQPHv2.mjs';
 import 'piccolore';
 import { Q as renderTemplate, B as maybeRenderHead, a3 as addAttribute } from './sequence_bpEQWQ1D.mjs';
-import { r as renderComponent } from './entrypoint_CsMLnXWo.mjs';
-import { $ as $$BaseLayout, r as renderScript } from './BaseLayout_g37VBgAI.mjs';
+import { r as renderComponent } from './entrypoint_DiYqfmF9.mjs';
+import { $ as $$BaseLayout, r as renderScript } from './BaseLayout_BqBOqHOw.mjs';
 
 const prerender = false;
 const $$Profile = createComponent(async ($$result, $$props, $$slots) => {
