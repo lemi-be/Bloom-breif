@@ -103,6 +103,7 @@ export default function LoginView() {
             data: {
               full_name: fullName,
             },
+            redirectTo: window.location.origin + "/login",
           },
         });
         if (authError) {
